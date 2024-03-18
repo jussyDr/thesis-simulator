@@ -6,7 +6,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { DragControls } from 'three/addons/controls/DragControls.js';
 
-import { BasicModulation } from './basic-modulation';
+import { BasicModulation } from './modulation/basic.js';
 
 class Simulation {
     params;
@@ -123,6 +123,10 @@ class Simulation {
     onWindowResize() {
         this.camera.aspect = window.innerWidth / window.innerHeight;
         this.camera.updateProjectionMatrix();
+    }
+
+    resetModulation() {
+        this.modulation.reset();
     }
 }
 

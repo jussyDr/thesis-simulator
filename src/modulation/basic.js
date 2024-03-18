@@ -112,22 +112,26 @@ class BasicModulation extends Modulation {
     }
 
     bitErrorRate() {
+        // console.log(this.numCorrect);
+        // console.log(this.numIncorrect);
+
         return this.numIncorrect / (this.numCorrect + this.numIncorrect);
     }
 
     dataRate() {
         return (this.numData) / (this.numTraining + this.numData);
     }
-}
 
-function arraysEqual(a, b) {
-    if (a === b) return true;
-    if (a == null || b == null) return false;
-    if (a.length !== b.length) return false;
+    reset() {
+        this.symbolQueue = [];
+        this.sendingPreamble = false;
 
-    for (var i = 0; i < a.length; ++i) {
-        if (a[i] !== b[i]) return false;
+        this.channelMatrixEstimateIndex = 0;
+
+        this.numCorrect = 0;
+        this.numIncorrect = 0;
+
+        this.numData = 0;
+        this.numTraining = 0;
     }
-
-    return true;
 }

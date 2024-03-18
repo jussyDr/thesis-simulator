@@ -23,18 +23,18 @@ document.body.appendChild(renderer.domElement);
 
 window.addEventListener('resize', onWindowResize);
 
+// Initialize simulation
+
+const simulation = new Simulation(renderer, params);
+
 // Initialize GUI
 
 const gui = new GUI();
 
-gui.add(params, 'frequency', 0);
-gui.add(params, 'rotationSpeed', 0);
+gui.add(params, 'frequency', 0).onChange(() => { simulation.resetModulation() });
+gui.add(params, 'rotationSpeed', 0).onChange(() => { simulation.resetModulation() });
 
 gui.open();
-
-// Initialize simulation
-
-const simulation = new Simulation(renderer, params);
 
 // Run simulation
 
