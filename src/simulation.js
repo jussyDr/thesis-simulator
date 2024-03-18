@@ -6,7 +6,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { DragControls } from 'three/addons/controls/DragControls.js';
 
-import { BasicModulation } from './modulation/basic.js';
+import { TrainingBasedModulation } from './modulation/training-based.js';
 
 class Simulation {
     params;
@@ -22,7 +22,7 @@ class Simulation {
     lightSourceHelper;
     transmitterMesh;
 
-    constructor(renderer, params, modulation = new BasicModulation()) {
+    constructor(renderer, params, modulation = new TrainingBasedModulation()) {
         this.params = params;
 
         this.clock = new THREE.Clock()
@@ -91,9 +91,8 @@ class Simulation {
     updateModulation() {
         const symbol = this.modulation.nextSymbol();
 
-        const [x1, lightSourceAngle] = toAxisAngle(this.lightSource.rotation);
-        const [x2, transmitterAngle] = toAxisAngle(this.transmitterMesh.rotation);
-        const todo = x1.dot(x2);
+        const [lightSourceAxis, lightSourceAngle] = toAxisAngle(this.lightSource.rotation);
+        const [transmitterAxis, transmitterAngle] = toAxisAngle(this.transmitterMesh.rotation);
 
         const angleDifference = lightSourceAngle - transmitterAngle;
         const a = Math.cos(angleDifference) ** 2;
@@ -106,7 +105,7 @@ class Simulation {
         this.modulation.update(signal);
 
         document.getElementById('ber').innerText = "BER: " + (this.modulation.bitErrorRate() * 100).toFixed(2) + "%";
-        document.getElementById('dr').innerText = "UTIL: " + (this.modulation.dataRate() * 100).toFixed(2) + "%";
+        document.getElementById('dr').innerText = "DR: " + (this.modulation.dataRate() * 100).toFixed(2) + "%";
     }
 
     render(renderer) {

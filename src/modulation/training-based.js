@@ -1,10 +1,10 @@
-export { BasicModulation };
+export { TrainingBasedModulation };
 
 import * as math from 'mathjs';
 
 import { Modulation } from './modulation';
 
-class BasicModulation extends Modulation {
+class TrainingBasedModulation extends Modulation {
     maxSymbolsPerFrame;
 
     symbolQueue;
@@ -112,9 +112,6 @@ class BasicModulation extends Modulation {
     }
 
     bitErrorRate() {
-        // console.log(this.numCorrect);
-        // console.log(this.numIncorrect);
-
         return this.numIncorrect / (this.numCorrect + this.numIncorrect);
     }
 
