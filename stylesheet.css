@@ -1,0 +1,18 @@
+#ber {
+    position: absolute;
+    bottom: 10px;
+    width: 100%;
+    z-index: 100;
+    display: block;
+    color: white;
+}
+
+#dr {
+    position: absolute;
+    left: 200px;
+    bottom: 10px;
+    width: 100%;
+    z-index: 100;
+    display: block;
+    color: white;
+}

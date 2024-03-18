@@ -1,9 +1,8 @@
-import * as math from 'mathjs';
-
 import * as THREE from 'three';
 
 import { Simulation } from './simulation';
 
+import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 
 // Initialize renderer
 
@@ -18,6 +17,12 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 document.body.appendChild(renderer.domElement);
 
 window.addEventListener('resize', onWindowResize);
+
+// Initialize GUI
+
+const gui = new GUI();
+
+gui.show();
 
 // Initialize simulation
 

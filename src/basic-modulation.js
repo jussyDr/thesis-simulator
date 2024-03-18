@@ -14,6 +14,11 @@ class BasicModulation extends Modulation {
     channelMatrixEstimateIndex;
 
     currentSymbol;
+    numCorrect;
+    numIncorrect;
+
+    numTraining;
+    numData;
 
     constructor(maxSymbolsPerFrame = 100) {
         super();
@@ -25,6 +30,12 @@ class BasicModulation extends Modulation {
 
         this.channelMatrixEstimate = math.zeros(3, 3)
         this.channelMatrixEstimateIndex = 0;
+
+        this.numCorrect = 0;
+        this.numIncorrect = 0;
+
+        this.numTraining = 0;
+        this.numData = 0;
     }
 
     nextSymbol() {
@@ -51,6 +62,8 @@ class BasicModulation extends Modulation {
         if (this.sendingPreamble) {
             this.channelMatrixEstimate.subset(math.index(this.channelMatrixEstimateIndex, [0, 1, 2]), signal);
             this.channelMatrixEstimateIndex = (this.channelMatrixEstimateIndex + 1) % 3;
+
+            this.numTraining += 3;
         } else {
             const estimatedSymbol = math.multiply(math.inv(this.channelMatrixEstimate), signal).toArray();
 
@@ -76,8 +89,34 @@ class BasicModulation extends Modulation {
                 }
             }
 
-            console.log(arraysEqual(bestSymbol, this.currentSymbol));
+            if (bestSymbol[0] == this.currentSymbol[0]) {
+                this.numCorrect += 1;
+            } else {
+                this.numIncorrect += 1;
+            }
+
+            if (bestSymbol[1] == this.currentSymbol[1]) {
+                this.numCorrect += 1;
+            } else {
+                this.numIncorrect += 1;
+            }
+
+            if (bestSymbol[2] == this.currentSymbol[2]) {
+                this.numCorrect += 1;
+            } else {
+                this.numIncorrect += 1;
+            }
+
+            this.numData += 3;
         }
+    }
+
+    bitErrorRate() {
+        return this.numIncorrect / (this.numCorrect + this.numIncorrect);
+    }
+
+    dataRate() {
+        return (this.numData) / (this.numTraining + this.numData);
     }
 }
 

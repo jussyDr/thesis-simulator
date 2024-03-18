@@ -4,6 +4,7 @@ import * as math from 'mathjs';
 
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { DragControls } from 'three/addons/controls/DragControls.js';
 
 import { BasicModulation } from './basic-modulation';
 
@@ -32,12 +33,12 @@ class Simulation {
         this.camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 100);
         this.camera.position.set(7, 4, 1);
 
-        const controls = new OrbitControls(this.camera, renderer.domElement);
-        controls.minDistance = 2;
-        controls.maxDistance = 10;
-        controls.maxPolarAngle = Math.PI / 2;
-        controls.target.set(0, 1, 0);
-        controls.update();
+        const orbitControls = new OrbitControls(this.camera, renderer.domElement);
+        orbitControls.minDistance = 2;
+        orbitControls.maxDistance = 10;
+        orbitControls.maxPolarAngle = Math.PI / 2;
+        orbitControls.target.set(0, 1, 0);
+        orbitControls.update();
 
         const geometry = new THREE.PlaneGeometry(200, 200);
         const material = new THREE.MeshLambertMaterial({ color: 0xbcbcbc });
@@ -72,13 +73,20 @@ class Simulation {
         this.transmitterMesh.castShadow = true;
         this.transmitterMesh.receiveShadow = true;
         this.scene.add(this.transmitterMesh);
+
+        const dragControls = new DragControls([this.transmitterMesh], this.camera, renderer.domElement);
+
+        dragControls.addEventListener('dragstart', function () { orbitControls.enabled = false; });
+        dragControls.addEventListener('dragend', function () { orbitControls.enabled = true; });
     }
 
     update() {
-        // this.transmitterMesh.rotateY(this.transmitterPeriod);
+        this.transmitterMesh.rotateY(this.transmitterPeriod);
 
-        // Update modulation
+        this.updateModulation();
+    }
 
+    updateModulation() {
         const symbol = this.modulation.nextSymbol();
 
         const [x1, lightSourceAngle] = toAxisAngle(this.lightSource.rotation);
@@ -94,6 +102,9 @@ class Simulation {
         const signal = math.multiply(symbol, channelMatrix);
 
         this.modulation.update(signal);
+
+        document.getElementById('ber').innerText = "BER: " + (this.modulation.bitErrorRate() * 100).toFixed(2) + "%";
+        document.getElementById('dr').innerText = "UTIL: " + (this.modulation.dataRate() * 100).toFixed(2) + "%";
     }
 
     render(renderer) {
