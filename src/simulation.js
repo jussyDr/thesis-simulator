@@ -9,9 +9,10 @@ import { DragControls } from 'three/addons/controls/DragControls.js';
 import { BasicModulation } from './basic-modulation';
 
 class Simulation {
+    params;
+
     clock;
     timeAccumulator;
-    transmitterPeriod;
 
     modulation;
 
@@ -21,10 +22,11 @@ class Simulation {
     lightSourceHelper;
     transmitterMesh;
 
-    constructor(renderer, transmitterFrequency = 100, modulation = new BasicModulation()) {
+    constructor(renderer, params, modulation = new BasicModulation()) {
+        this.params = params;
+
         this.clock = new THREE.Clock()
         this.timeAccumulator = 0;
-        this.transmitterPeriod = 1 / transmitterFrequency;
 
         this.modulation = modulation;
 
@@ -74,14 +76,14 @@ class Simulation {
         this.transmitterMesh.receiveShadow = true;
         this.scene.add(this.transmitterMesh);
 
-        const dragControls = new DragControls([this.transmitterMesh], this.camera, renderer.domElement);
+        const dragControls = new DragControls([], this.camera, renderer.domElement);
 
         dragControls.addEventListener('dragstart', function () { orbitControls.enabled = false; });
         dragControls.addEventListener('dragend', function () { orbitControls.enabled = true; });
     }
 
     update() {
-        this.transmitterMesh.rotateY(this.transmitterPeriod);
+        this.transmitterMesh.rotateY((1 / this.params.frequency) * this.params.rotationSpeed);
 
         this.updateModulation();
     }
@@ -110,9 +112,9 @@ class Simulation {
     render(renderer) {
         this.timeAccumulator += this.clock.getDelta();
 
-        while (this.timeAccumulator >= this.transmitterPeriod) {
+        while (this.timeAccumulator >= (1 / this.params.frequency)) {
             this.update();
-            this.timeAccumulator -= this.transmitterPeriod;
+            this.timeAccumulator -= 1 / this.params.frequency;
         }
 
         renderer.render(this.scene, this.camera);

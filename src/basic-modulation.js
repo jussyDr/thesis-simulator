@@ -60,7 +60,7 @@ class BasicModulation extends Modulation {
 
     update(signal) {
         if (this.sendingPreamble) {
-            this.channelMatrixEstimate.subset(math.index(this.channelMatrixEstimateIndex, [0, 1, 2]), signal);
+            this.channelMatrixEstimate.subset(math.index([0, 1, 2], this.channelMatrixEstimateIndex), signal);
             this.channelMatrixEstimateIndex = (this.channelMatrixEstimateIndex + 1) % 3;
 
             this.numTraining += 3;

@@ -4,6 +4,11 @@ import { Simulation } from './simulation';
 
 import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 
+var params = {
+    frequency: 100,
+    rotationSpeed: 0.1,
+};
+
 // Initialize renderer
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -22,11 +27,14 @@ window.addEventListener('resize', onWindowResize);
 
 const gui = new GUI();
 
-gui.show();
+gui.add(params, 'frequency', 0);
+gui.add(params, 'rotationSpeed', 0);
+
+gui.open();
 
 // Initialize simulation
 
-const simulation = new Simulation(renderer);
+const simulation = new Simulation(renderer, params);
 
 // Run simulation
 
