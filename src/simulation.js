@@ -107,6 +107,7 @@ class Simulation {
 
         this.params.modulation.update(signal);
 
+        document.getElementById('snr').innerText = "SNR: " + (1 / this.params.noise);
         document.getElementById('ber').innerText = "BER: " + (this.params.modulation.bitErrorRate() * 100).toFixed(2) + "%";
         document.getElementById('dr').innerText = "DR: " + (this.params.modulation.dataRate() * 100).toFixed(2) + "%";
     }
