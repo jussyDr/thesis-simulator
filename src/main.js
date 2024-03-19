@@ -6,6 +6,7 @@ import { Simulation } from './simulation';
 import { TrainingBasedModulation } from './modulation/training-based';
 import { SemiBlindModulation } from './modulation/semi-blind';
 
+// GUI parameters
 
 var params = {
     noise: 0.05,
