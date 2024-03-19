@@ -8,6 +8,7 @@ import { SemiBlindModulation } from './modulation/semi-blind';
 
 
 var params = {
+    noise: 0.05,
     frequency: 100,
     rotationSpeed: 0.5,
 
@@ -18,7 +19,7 @@ var params = {
 
 const modulations = {
     'training based': new TrainingBasedModulation(params),
-    'semi blind': new SemiBlindModulation()
+    'semi blind': new SemiBlindModulation(params)
 };
 
 params.modulation = modulations["training based"];
@@ -45,6 +46,7 @@ const simulation = new Simulation(renderer, params);
 
 const gui = new GUI();
 
+gui.add(params, 'noise', 0).onChange(() => { simulation.resetModulation() });
 gui.add(params, 'frequency', 0).onChange(() => { simulation.resetModulation() });
 gui.add(params, 'rotationSpeed', 0).onChange(() => { simulation.resetModulation() });
 
