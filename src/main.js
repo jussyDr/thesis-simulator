@@ -1,12 +1,17 @@
 import * as THREE from 'three';
 
-import { Simulation } from './simulation';
-
 import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 
+import { Simulation } from './simulation';
+import { TrainingBasedModulation } from './modulation/training-based';
+import { SemiBlindModulation } from './modulation/semi-blind';
+
+const modulations = { 'training based': new TrainingBasedModulation(), 'semi blind': new SemiBlindModulation() };
+
 var params = {
+    modulation: modulations["training based"],
     frequency: 100,
-    rotationSpeed: 0.1,
+    rotationSpeed: 0.5,
 };
 
 // Initialize renderer
@@ -31,6 +36,7 @@ const simulation = new Simulation(renderer, params);
 
 const gui = new GUI();
 
+gui.add(params, "modulation", modulations).onChange((modulation) => { modulation.reset() });
 gui.add(params, 'frequency', 0).onChange(() => { simulation.resetModulation() });
 gui.add(params, 'rotationSpeed', 0).onChange(() => { simulation.resetModulation() });
 

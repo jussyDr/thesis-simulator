@@ -6,15 +6,11 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { DragControls } from 'three/addons/controls/DragControls.js';
 
-import { TrainingBasedModulation } from './modulation/training-based.js';
-
 class Simulation {
     params;
 
     clock;
     timeAccumulator;
-
-    modulation;
 
     scene;
     camera;
@@ -22,13 +18,11 @@ class Simulation {
     lightSourceHelper;
     transmitterMesh;
 
-    constructor(renderer, params, modulation = new TrainingBasedModulation()) {
+    constructor(renderer, params) {
         this.params = params;
 
         this.clock = new THREE.Clock()
         this.timeAccumulator = 0;
-
-        this.modulation = modulation;
 
         this.scene = new THREE.Scene()
 
@@ -89,7 +83,7 @@ class Simulation {
     }
 
     updateModulation() {
-        const symbol = this.modulation.nextSymbol();
+        const symbol = this.params.modulation.nextSymbol();
 
         const [lightSourceAxis, lightSourceAngle] = toAxisAngle(this.lightSource.rotation);
         const [transmitterAxis, transmitterAngle] = toAxisAngle(this.transmitterMesh.rotation);
@@ -102,10 +96,10 @@ class Simulation {
         const channelMatrix = math.matrix([[a, b, c], [c, a, b], [b, c, a]]);
         const signal = math.multiply(symbol, channelMatrix);
 
-        this.modulation.update(signal);
+        this.params.modulation.update(signal);
 
-        document.getElementById('ber').innerText = "BER: " + (this.modulation.bitErrorRate() * 100).toFixed(2) + "%";
-        document.getElementById('dr').innerText = "DR: " + (this.modulation.dataRate() * 100).toFixed(2) + "%";
+        document.getElementById('ber').innerText = "BER: " + (this.params.modulation.bitErrorRate() * 100).toFixed(2) + "%";
+        document.getElementById('dr').innerText = "DR: " + (this.params.modulation.dataRate() * 100).toFixed(2) + "%";
     }
 
     render(renderer) {
@@ -125,7 +119,7 @@ class Simulation {
     }
 
     resetModulation() {
-        this.modulation.reset();
+        this.params.modulation.reset();
     }
 }
 

@@ -38,6 +38,19 @@ class TrainingBasedModulation extends Modulation {
         this.numData = 0;
     }
 
+    reset() {
+        this.symbolQueue = [];
+        this.sendingPreamble = false;
+
+        this.channelMatrixEstimateIndex = 0;
+
+        this.numCorrect = 0;
+        this.numIncorrect = 0;
+
+        this.numData = 0;
+        this.numTraining = 0;
+    }
+
     nextSymbol() {
         if (this.symbolQueue.length == 0) {
             if (this.sendingPreamble) {
@@ -119,16 +132,5 @@ class TrainingBasedModulation extends Modulation {
         return (this.numData) / (this.numTraining + this.numData);
     }
 
-    reset() {
-        this.symbolQueue = [];
-        this.sendingPreamble = false;
 
-        this.channelMatrixEstimateIndex = 0;
-
-        this.numCorrect = 0;
-        this.numIncorrect = 0;
-
-        this.numData = 0;
-        this.numTraining = 0;
-    }
 }
