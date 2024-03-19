@@ -36,6 +36,9 @@ class Simulation {
         orbitControls.target.set(0, 1, 0);
         orbitControls.update();
 
+        const ambientLight = new THREE.HemisphereLight(0xffffff, 0x8d8d8d, 0.15);
+        this.scene.add(ambientLight);
+
         const geometry = new THREE.PlaneGeometry(200, 200);
         const material = new THREE.MeshLambertMaterial({ color: 0xbcbcbc });
         const mesh = new THREE.Mesh(geometry, material);
@@ -85,6 +88,9 @@ class Simulation {
     updateModulation() {
         const symbol = this.params.modulation.nextSymbol();
 
+        const distance = this.lightSource.position.distanceTo(this.transmitterMesh.position);
+        const attenuation = 1 / (distance * distance);
+
         const [lightSourceAxis, lightSourceAngle] = toAxisAngle(this.lightSource.rotation);
         const [transmitterAxis, transmitterAngle] = toAxisAngle(this.transmitterMesh.rotation);
 
@@ -103,17 +109,17 @@ class Simulation {
             getNormallyDistributedRandomNumber(bias, this.params.noise)
         ]);
 
-        const signal = math.add(math.multiply(symbol, channelMatrix), noise);
+        const signal = math.add(math.multiply(math.multiply(symbol, channelMatrix), attenuation), noise);
 
         this.params.modulation.update(signal);
 
-        const [pd1, pd2, pd3] = math.add(math.multiply([1, 0, 1], channelMatrix), noise).toArray();
+        const [pd1, pd2, pd3] = math.add(math.multiply(math.multiply([1, 0, 0], channelMatrix), attenuation), noise).toArray();
 
         document.getElementById("pd1").value = pd1;
         document.getElementById("pd2").value = pd2;
         document.getElementById("pd3").value = pd3;
 
-        document.getElementById('snr').innerText = "SNR: " + (1 / this.params.noise);
+        document.getElementById('snr').innerText = "SNR: " + (attenuation / this.params.noise);
         document.getElementById('ber').innerText = "BER: " + (this.params.modulation.bitErrorRate() * 100).toFixed(2) + "%";
         document.getElementById('dr').innerText = "DR: " + (this.params.modulation.dataRate() * 100).toFixed(2) + "%";
     }
@@ -136,6 +142,12 @@ class Simulation {
 
     resetModulation() {
         this.params.modulation.reset();
+    }
+
+    setDistance(distance) {
+        this.lightSource.position.y = distance;
+        this.lightSourceHelper.position.y = distance;
+        this.lightSourceHelper.update();
     }
 }
 

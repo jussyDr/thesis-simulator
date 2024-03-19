@@ -9,13 +9,14 @@ import { SemiBlindModulation } from './modulation/semi-blind';
 // GUI parameters
 
 var params = {
-    noise: 0.05,
+    noise: 0,
     frequency: 100,
-    rotationSpeed: 0.5,
+    rotationSpeed: 1,
+    distance: 2.5,
 
     modulation: undefined,
     maxSymbolsPerFrame: 100,
-    shortPreamble: false,
+    shortPreamble: true,
 };
 
 const modulations = {
@@ -23,7 +24,7 @@ const modulations = {
     'semi blind': new SemiBlindModulation(params)
 };
 
-params.modulation = modulations["training based"];
+params.modulation = modulations["semi blind"];
 
 // Initialize renderer
 
@@ -50,6 +51,7 @@ const gui = new GUI();
 gui.add(params, 'noise', 0).onChange(() => { simulation.resetModulation() });
 gui.add(params, 'frequency', 0).onChange(() => { simulation.resetModulation() });
 gui.add(params, 'rotationSpeed', 0).onChange(() => { simulation.resetModulation() });
+gui.add(params, "distance", 0).onChange((distance) => { simulation.setDistance(distance); simulation.resetModulation() });
 
 gui.add(params, "modulation", modulations).onChange((modulation) => { modulation.reset() });
 gui.add(params, "maxSymbolsPerFrame", 0).onChange(() => { simulation.resetModulation() });
