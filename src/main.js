@@ -13,6 +13,7 @@ var params = {
 
     modulation: undefined,
     maxSymbolsPerFrame: 100,
+    shortPreamble: false,
 };
 
 const modulations = {
@@ -49,6 +50,7 @@ gui.add(params, 'rotationSpeed', 0).onChange(() => { simulation.resetModulation(
 
 gui.add(params, "modulation", modulations).onChange((modulation) => { modulation.reset() });
 gui.add(params, "maxSymbolsPerFrame", 0).onChange(() => { simulation.resetModulation() });
+gui.add(params, "shortPreamble").onChange(() => { simulation.resetModulation() });
 
 gui.open();
 

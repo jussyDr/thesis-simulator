@@ -58,9 +58,13 @@ class TrainingBasedModulation extends Modulation {
                     this.symbolQueue.push(math.randomInt([3], 0, 2));
                 }
             } else {
-                this.symbolQueue.push(math.matrix([1, 0, 0]));
-                this.symbolQueue.push(math.matrix([0, 1, 0]));
-                this.symbolQueue.push(math.matrix([0, 0, 1]));
+                if (this.params.shortPreamble) {
+                    this.symbolQueue.push(math.matrix([1, 0, 0]));
+                } else {
+                    this.symbolQueue.push(math.matrix([1, 0, 0]));
+                    this.symbolQueue.push(math.matrix([0, 1, 0]));
+                    this.symbolQueue.push(math.matrix([0, 0, 1]));
+                }
             }
 
             this.sendingPreamble = !this.sendingPreamble;
@@ -73,10 +77,18 @@ class TrainingBasedModulation extends Modulation {
 
     update(signal) {
         if (this.sendingPreamble) {
-            this.channelMatrixEstimate.subset(math.index([0, 1, 2], this.channelMatrixEstimateIndex), signal);
-            this.channelMatrixEstimateIndex = (this.channelMatrixEstimateIndex + 1) % 3;
+            if (this.params.shortPreamble) {
+                const [a, b, c] = signal.toArray();
 
-            this.numTraining += 3;
+                this.channelMatrixEstimate = math.matrix([[a, c, b], [b, a, c], [c, b, a]]);
+
+                this.numTraining += 1;
+            } else {
+                this.channelMatrixEstimate.subset(math.index([0, 1, 2], this.channelMatrixEstimateIndex), signal);
+                this.channelMatrixEstimateIndex = (this.channelMatrixEstimateIndex + 1) % 3;
+
+                this.numTraining += 3;
+            }
         } else {
             const estimatedSymbol = math.multiply(math.inv(this.channelMatrixEstimate), signal).toArray();
 
