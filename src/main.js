@@ -6,13 +6,21 @@ import { Simulation } from './simulation';
 import { TrainingBasedModulation } from './modulation/training-based';
 import { SemiBlindModulation } from './modulation/semi-blind';
 
-const modulations = { 'training based': new TrainingBasedModulation(), 'semi blind': new SemiBlindModulation() };
 
 var params = {
-    modulation: modulations["training based"],
     frequency: 100,
     rotationSpeed: 0.5,
+
+    modulation: undefined,
+    maxSymbolsPerFrame: 100,
 };
+
+const modulations = {
+    'training based': new TrainingBasedModulation(params),
+    'semi blind': new SemiBlindModulation()
+};
+
+params.modulation = modulations["training based"];
 
 // Initialize renderer
 
@@ -36,9 +44,11 @@ const simulation = new Simulation(renderer, params);
 
 const gui = new GUI();
 
-gui.add(params, "modulation", modulations).onChange((modulation) => { modulation.reset() });
 gui.add(params, 'frequency', 0).onChange(() => { simulation.resetModulation() });
 gui.add(params, 'rotationSpeed', 0).onChange(() => { simulation.resetModulation() });
+
+gui.add(params, "modulation", modulations).onChange((modulation) => { modulation.reset() });
+gui.add(params, "maxSymbolsPerFrame", 0).onChange(() => { simulation.resetModulation() });
 
 gui.open();
 

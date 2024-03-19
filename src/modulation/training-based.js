@@ -5,7 +5,7 @@ import * as math from 'mathjs';
 import { Modulation } from './modulation';
 
 class TrainingBasedModulation extends Modulation {
-    maxSymbolsPerFrame;
+    params;
 
     symbolQueue;
     sendingPreamble;
@@ -20,10 +20,10 @@ class TrainingBasedModulation extends Modulation {
     numTraining;
     numData;
 
-    constructor(maxSymbolsPerFrame = 100) {
+    constructor(params) {
         super();
 
-        this.maxSymbolsPerFrame = maxSymbolsPerFrame;
+        this.params = params;
 
         this.symbolQueue = [];
         this.sendingPreamble = false;
@@ -54,7 +54,7 @@ class TrainingBasedModulation extends Modulation {
     nextSymbol() {
         if (this.symbolQueue.length == 0) {
             if (this.sendingPreamble) {
-                for (let i = 0; i < this.maxSymbolsPerFrame; i++) {
+                for (let i = 0; i < this.params.maxSymbolsPerFrame; i++) {
                     this.symbolQueue.push(math.randomInt([3], 0, 2));
                 }
             } else {
@@ -131,6 +131,4 @@ class TrainingBasedModulation extends Modulation {
     dataRate() {
         return (this.numData) / (this.numTraining + this.numData);
     }
-
-
 }
