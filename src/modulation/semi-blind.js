@@ -5,19 +5,13 @@ import * as math from 'mathjs';
 import { Modulation } from './modulation';
 
 class SemiBlindModulation extends Modulation {
-    maxSymbolsPerFrame;
-
     symbolQueue;
     sendingPreamble;
 
     channelMatrixEstimate;
+    channelMatrixEstimateIndex;
 
     currentSymbol;
-    numCorrect;
-    numIncorrect;
-
-    numTraining;
-    numData;
 
     constructor(params) {
         super();
@@ -27,24 +21,17 @@ class SemiBlindModulation extends Modulation {
         this.symbolQueue = [];
         this.sendingPreamble = false;
 
-        this.channelMatrixEstimate = math.zeros(3, 3)
-
-        this.numCorrect = 0;
-        this.numIncorrect = 0;
-
-        this.numTraining = 0;
-        this.numData = 0;
+        this.channelMatrixEstimate = math.zeros(3, 3);
+        this.channelMatrixEstimateIndex = 0;
     }
 
     reset() {
+        super.reset();
+
         this.symbolQueue = [];
         this.sendingPreamble = false;
 
-        this.numCorrect = 0;
-        this.numIncorrect = 0;
-
-        this.numData = 0;
-        this.numTraining = 0;
+        this.channelMatrixEstimateIndex = 0;
     }
 
     nextSymbol() {
@@ -54,7 +41,13 @@ class SemiBlindModulation extends Modulation {
                     this.symbolQueue.push(math.randomInt([3], 0, 2));
                 }
             } else {
-                this.symbolQueue.push(math.matrix([1, 0, 0]));
+                if (this.params.shortPreamble) {
+                    this.symbolQueue.push(math.matrix([1, 0, 0]));
+                } else {
+                    this.symbolQueue.push(math.matrix([1, 0, 0]));
+                    this.symbolQueue.push(math.matrix([0, 1, 0]));
+                    this.symbolQueue.push(math.matrix([0, 0, 1]));
+                }
             }
 
             this.sendingPreamble = !this.sendingPreamble;
@@ -67,11 +60,18 @@ class SemiBlindModulation extends Modulation {
 
     update(signal) {
         if (this.sendingPreamble) {
-            const [a, b, c] = signal.toArray();
+            if (this.params.shortPreamble) {
+                const [a, b, c] = signal.toArray();
 
-            this.channelMatrixEstimate = math.matrix([[a, c, b], [b, a, c], [c, b, a]]);
+                this.channelMatrixEstimate = math.matrix([[a, c, b], [b, a, c], [c, b, a]]);
 
-            this.numTraining += 1;
+                this.numTraining += 1;
+            } else {
+                this.channelMatrixEstimate.subset(math.index([0, 1, 2], this.channelMatrixEstimateIndex), signal);
+                this.channelMatrixEstimateIndex = (this.channelMatrixEstimateIndex + 1) % 3;
+
+                this.numTraining += 3;
+            }
         } else {
             const estimatedSymbol = math.multiply(math.inv(this.channelMatrixEstimate), signal).toArray();
 
@@ -129,13 +129,5 @@ class SemiBlindModulation extends Modulation {
 
             this.numData += 3;
         }
-    }
-
-    bitErrorRate() {
-        return this.numIncorrect / (this.numCorrect + this.numIncorrect);
-    }
-
-    dataRate() {
-        return (this.numData) / (this.numTraining + this.numData);
     }
 }

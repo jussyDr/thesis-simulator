@@ -1,3 +1,23 @@
+#pd1 {
+    position: absolute;
+    transform: rotate(270deg);
+    top: 100px;
+}
+
+#pd2 {
+    position: absolute;
+    transform: rotate(270deg);
+    top: 100px;
+    left: 50px;
+}
+
+#pd3 {
+    position: absolute;
+    transform: rotate(270deg);
+    top: 100px;
+    left: 100px;
+}
+
 #snr {
     position: absolute;
     bottom: 10px;

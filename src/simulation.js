@@ -107,6 +107,12 @@ class Simulation {
 
         this.params.modulation.update(signal);
 
+        const [pd1, pd2, pd3] = math.add(math.multiply([1, 0, 1], channelMatrix), noise).toArray();
+
+        document.getElementById("pd1").value = pd1;
+        document.getElementById("pd2").value = pd2;
+        document.getElementById("pd3").value = pd3;
+
         document.getElementById('snr').innerText = "SNR: " + (1 / this.params.noise);
         document.getElementById('ber').innerText = "BER: " + (this.params.modulation.bitErrorRate() * 100).toFixed(2) + "%";
         document.getElementById('dr').innerText = "DR: " + (this.params.modulation.dataRate() * 100).toFixed(2) + "%";

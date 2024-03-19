@@ -14,11 +14,6 @@ class TrainingBasedModulation extends Modulation {
     channelMatrixEstimateIndex;
 
     currentSymbol;
-    numCorrect;
-    numIncorrect;
-
-    numTraining;
-    numData;
 
     constructor(params) {
         super();
@@ -30,25 +25,15 @@ class TrainingBasedModulation extends Modulation {
 
         this.channelMatrixEstimate = math.zeros(3, 3)
         this.channelMatrixEstimateIndex = 0;
-
-        this.numCorrect = 0;
-        this.numIncorrect = 0;
-
-        this.numTraining = 0;
-        this.numData = 0;
     }
 
     reset() {
+        super.reset();
+
         this.symbolQueue = [];
         this.sendingPreamble = false;
 
         this.channelMatrixEstimateIndex = 0;
-
-        this.numCorrect = 0;
-        this.numIncorrect = 0;
-
-        this.numData = 0;
-        this.numTraining = 0;
     }
 
     nextSymbol() {
@@ -134,13 +119,5 @@ class TrainingBasedModulation extends Modulation {
 
             this.numData += 3;
         }
-    }
-
-    bitErrorRate() {
-        return this.numIncorrect / (this.numCorrect + this.numIncorrect);
-    }
-
-    dataRate() {
-        return (this.numData) / (this.numTraining + this.numData);
     }
 }
