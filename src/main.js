@@ -17,6 +17,7 @@ var params = {
     modulation: undefined,
     maxSymbolsPerFrame: 100,
     shortPreamble: true,
+    messageType: 'random'
 };
 
 const modulations = {
@@ -56,6 +57,7 @@ gui.add(params, "distance", 0).onChange((distance) => { simulation.setDistance(d
 gui.add(params, "modulation", modulations).onChange((modulation) => { modulation.reset() });
 gui.add(params, "maxSymbolsPerFrame", 0).onChange(() => { simulation.resetModulation() });
 gui.add(params, "shortPreamble").onChange(() => { simulation.resetModulation() });
+gui.add(params, 'messageType', ['random', 'constant', 'difficult']).onChange(() => { simulation.resetModulation() });
 
 gui.open();
 

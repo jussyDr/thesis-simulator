@@ -5,9 +5,6 @@ import * as math from 'mathjs';
 import { Modulation } from './modulation';
 
 class TrainingBasedModulation extends Modulation {
-    params;
-
-    symbolQueue;
     sendingPreamble;
 
     channelMatrixEstimate;
@@ -16,11 +13,8 @@ class TrainingBasedModulation extends Modulation {
     currentSymbol;
 
     constructor(params) {
-        super();
+        super(params);
 
-        this.params = params;
-
-        this.symbolQueue = [];
         this.sendingPreamble = false;
 
         this.channelMatrixEstimate = math.zeros(3, 3)
@@ -30,7 +24,6 @@ class TrainingBasedModulation extends Modulation {
     reset() {
         super.reset();
 
-        this.symbolQueue = [];
         this.sendingPreamble = false;
 
         this.channelMatrixEstimateIndex = 0;
@@ -39,9 +32,7 @@ class TrainingBasedModulation extends Modulation {
     nextSymbol() {
         if (this.symbolQueue.length == 0) {
             if (this.sendingPreamble) {
-                for (let i = 0; i < this.params.maxSymbolsPerFrame; i++) {
-                    this.symbolQueue.push(math.randomInt([3], 0, 2));
-                }
+                this.addDataSymbolsToQueue();
             } else {
                 if (this.params.shortPreamble) {
                     this.symbolQueue.push(math.matrix([1, 0, 0]));
