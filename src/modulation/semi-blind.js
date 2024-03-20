@@ -66,6 +66,13 @@ class SemiBlindModulation extends Modulation {
                 this.numTraining += 3;
             }
         } else {
+            if (math.det(this.channelMatrixEstimate) == 0) {
+                this.numIncorrect += 3;
+                this.numData += 3;
+
+                return;
+            }
+
             const estimatedSymbol = math.multiply(math.inv(this.channelMatrixEstimate), signal).toArray();
 
             var bestSymbol;

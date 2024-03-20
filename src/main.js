@@ -11,18 +11,18 @@ import { SemiBlindModulation } from './modulation/semi-blind';
 var params = {
     noise: 0,
     frequency: 100,
-    rotationSpeed: 1,
+    rotationSpeed: 4,
     distance: 2.5,
 
     modulation: undefined,
     maxSymbolsPerFrame: 100,
     shortPreamble: true,
-    messageType: 'random'
+    messageType: 'difficult'
 };
 
 const modulations = {
     'training based': new TrainingBasedModulation(params),
-    'semi blind': new SemiBlindModulation(params)
+    'semi blind': new SemiBlindModulation(params),
 };
 
 params.modulation = modulations["semi blind"];
